@@ -8,8 +8,7 @@ local ALIST_HOST = string.format('http://%s:5244', HOST)
 local ALIST_TOKEN = 'alist-a7a4844a-68c9-4241-acca-7df59df2b6b8xyzR5VpjflYoZuYjNXuH3lpmrjuvShIefnTcEehRVJrrTKy9xNa0mcTJtT5en2RM'
 
 local EMBY_HOST = string.format('http://%s:8097', HOST)
-local EMBY_TOKEN = 'ff69f6577eba4b5e9f0a7ebc9acb521d'
-local EMBY_USER_ID = '7bf710d1e598402a95faabd782943730'
+local EMBY_TOKEN = '70788818f3814092af79fde2bc07e55c'
 local EMBY_MOUNT_PATH = 'X:'
 
 function _M.redirect_to_pan(item_id)
@@ -17,7 +16,7 @@ function _M.redirect_to_pan(item_id)
 
     if file_path and string.find(file_path, '^' .. EMBY_MOUNT_PATH) then
         -- 云盘文件
-        ngx.log(ngx.ERR, '# real_path: ', file_path)
+        ngx.log(ngx.INFO, '# real_path: ', file_path)
         
         local pan_path = _M.get_pan_path(file_path)
 
@@ -32,7 +31,7 @@ end
 
 -- 查询文件（硬盘）路径
 function _M.get_file_path(item_id)
-    local info_api = string.format('%s/Items/%s/PlaybackInfo?UserId=%s&api_key=%s', EMBY_HOST, item_id, EMBY_USER_ID, EMBY_TOKEN)
+    local info_api = string.format('%s/Items/%s/PlaybackInfo?api_key=%s', EMBY_HOST, item_id, EMBY_TOKEN)
     local httpc = http.new()
 
     local res, err = httpc:request_uri(info_api, {
@@ -50,7 +49,7 @@ function _M.get_file_path(item_id)
 
     local data = cjson.decode(res.body)
     local file_path = data.MediaSources[1].Path
-    -- ngx.log(ngx.ERR, '# real_path: ', file_path)
+    -- ngx.log(ngx.INFO, '# real_path: ', file_path)
 
     return file_path
 end
@@ -82,7 +81,8 @@ function _M.get_pan_path(file_path)
     end
 
     local pan_path = data.data.raw_url
-    -- ngx.log(ngx.ERR, '# pan_path: ', pan_path)
+    pan_path = string.gsub(pan_path, 'https://', 'http://', 1)
+    -- ngx.log(ngx.INFO, '# pan_path: ', pan_path)
 
     return pan_path
 
