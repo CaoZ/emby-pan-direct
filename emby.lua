@@ -8,7 +8,7 @@ local ALIST_HOST = string.format('http://%s:5244', HOST)
 local ALIST_TOKEN = 'alist-a7a4844a-68c9-4241-acca-7df59df2b6b8xyzR5VpjflYoZuYjNXuH3lpmrjuvShIefnTcEehRVJrrTKy9xNa0mcTJtT5en2RM'
 
 local EMBY_HOST = string.format('http://%s:8097', HOST)
-local EMBY_TOKEN = '70788818f3814092af79fde2bc07e55c'
+local EMBY_TOKEN = '98449ad8d4ec46d98d774cd74425d224'
 local EMBY_MOUNT_PATH = 'X:'
 
 function _M.redirect_to_pan(item_id)
