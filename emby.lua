@@ -10,6 +10,7 @@ local ALIST_TOKEN = 'alist-a7a4844a-68c9-4241-acca-7df59df2b6b8xyzR5VpjflYoZuYjN
 local EMBY_HOST = string.format('http://%s:8097', HOST)
 local EMBY_TOKEN = '98449ad8d4ec46d98d774cd74425d224'
 local EMBY_MOUNT_PATH = 'X:'
+local CACHE_TIME = 3600 * 3  -- 从 x-oss-expires 得知返回 url 有效时间最大为 4 小时
 
 function _M.redirect_to_pan(item_id)
     local file_path = _M.get_file_path(item_id)
@@ -56,6 +57,13 @@ end
 
 -- 查询文件网盘直链路径
 function _M.get_pan_path(file_path)
+    local cache = ngx.shared.pan_paths
+    local pan_path, _ = cache:get(file_path)
+
+    if pan_path then
+        return pan_path
+    end
+
     local httpc = http.new()
 
     local res, err = httpc:request_uri(ALIST_HOST .. '/api/fs/get', {
@@ -80,9 +88,10 @@ function _M.get_pan_path(file_path)
         return
     end
 
-    local pan_path = data.data.raw_url
-    pan_path = string.gsub(pan_path, 'https://', 'http://', 1)
+    pan_path = string.gsub(data.data.raw_url, 'https://', 'http://', 1)
     -- ngx.log(ngx.INFO, '# pan_path: ', pan_path)
+
+    cache:set(file_path, pan_path, CACHE_TIME)
 
     return pan_path
 
