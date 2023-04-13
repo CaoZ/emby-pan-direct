@@ -33,7 +33,9 @@ end
 -- 查询文件（硬盘）路径
 function _M.get_file_path(item_id)
     local info_api = string.format('%s/Items/%s/PlaybackInfo?api_key=%s', EMBY_HOST, item_id, EMBY_TOKEN)
+
     local httpc = http.new()
+    httpc:set_timeouts(1000, 1000, 5000)
 
     local res, err = httpc:request_uri(info_api, {
         method = 'POST',
@@ -65,6 +67,7 @@ function _M.get_pan_path(file_path)
     end
 
     local httpc = http.new()
+    httpc:set_timeouts(1000, 1000, 5000)
 
     local res, err = httpc:request_uri(ALIST_HOST .. '/api/fs/get', {
         method = 'POST',
